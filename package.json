@@ -1,0 +1,11 @@
+{
+  "name": "phonics-admin",
+  "version": "1.0.0",
+  "description": "Admin analytics dashboard for Phonics Hub",
+  "scripts": {
+    "dev": "npx serve . -p 4000"
+  },
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}
