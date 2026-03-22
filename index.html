@@ -3,529 +3,1266 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Phonics Hub — Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Phonics Hub — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-:root {
-  --bg:#0f172a; --surface:#1e293b; --card:#243148; --border:#334155;
-  --primary:#6366f1; --green:#22c55e; --yellow:#f59e0b; --red:#ef4444;
-  --cyan:#06b6d4; --purple:#a855f7;
-  --text:#f1f5f9; --muted:#94a3b8;
-  --radius:16px;
-}
-body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  /* ── TOKENS ─────────────────────────────────────────────── */
+  :root {
+    --bg:       #0a0c0f;
+    --surface:  #111318;
+    --border:   #1e2229;
+    --border2:  #2a2f3a;
+    --text:     #e8eaf0;
+    --muted:    #636b7a;
+    --accent:   #4ade80;
+    --accent2:  #22d3ee;
+    --warn:     #fb923c;
+    --danger:   #f87171;
+    --yellow:   #facc15;
+    --mono:     'DM Mono', monospace;
+    --sans:     'DM Sans', sans-serif;
+    --display:  'Syne', sans-serif;
+    --radius:   10px;
+    --shadow:   0 4px 24px rgba(0,0,0,.5);
+  }
 
-/* ── Login Screen ── */
-#login-screen {
-  position:fixed; inset:0; background:var(--bg); z-index:100;
-  display:flex; align-items:center; justify-content:center; padding:20px;
-}
-.login-box {
-  background:var(--surface); border-radius:24px; padding:40px 32px;
-  width:100%; max-width:380px; text-align:center;
-  border:1px solid var(--border);
-  box-shadow:0 24px 64px rgba(0,0,0,.5);
-}
-.login-box h1 { font-family:'Fredoka One',cursive; font-size:2rem; margin-bottom:6px; }
-.login-box p  { color:var(--muted); font-size:.9rem; margin-bottom:28px; }
-.form-group { margin-bottom:14px; text-align:left; }
-.form-group label { font-size:.82rem; font-weight:800; color:var(--muted); display:block; margin-bottom:6px; }
-.form-group input {
-  width:100%; padding:12px 16px; background:var(--card);
-  border:1.5px solid var(--border); border-radius:12px; color:var(--text);
-  font-family:'Nunito',sans-serif; font-size:.95rem; font-weight:700; outline:none;
-  transition:border-color .2s;
-}
-.form-group input:focus { border-color:var(--primary); }
-.login-btn {
-  width:100%; padding:14px; background:var(--primary); color:white; border:none;
-  border-radius:12px; font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem;
-  cursor:pointer; margin-top:8px; transition:opacity .2s;
-}
-.login-btn:hover { opacity:.9; }
-.login-error { color:var(--red); font-size:.85rem; margin-top:10px; display:none; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 15px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
 
-/* ── Top bar ── */
-.topbar {
-  background:var(--surface); border-bottom:1px solid var(--border);
-  padding:14px 24px; display:flex; align-items:center; justify-content:space-between;
-  position:sticky; top:0; z-index:10;
-}
-.topbar-left { display:flex; align-items:center; gap:12px; }
-.topbar h1   { font-family:'Fredoka One',cursive; font-size:1.3rem; color:var(--text); }
-.live-badge  { background:#22c55e22; color:#22c55e; border:1px solid #22c55e55;
-               border-radius:999px; padding:3px 10px; font-size:.75rem; font-weight:800;
-               display:flex; align-items:center; gap:5px; }
-.live-dot    { width:6px; height:6px; background:#22c55e; border-radius:50%; animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
-.topbar-right { display:flex; align-items:center; gap:10px; }
-.btn-sm { padding:8px 14px; border-radius:10px; border:none; font-weight:800; cursor:pointer;
-          font-family:'Nunito',sans-serif; font-size:.82rem; transition:opacity .2s; }
-.btn-primary { background:var(--primary); color:white; }
-.btn-ghost   { background:transparent; color:var(--muted); border:1.5px solid var(--border); }
-.btn-sm:hover { opacity:.85; }
+  /* ── SCROLLBAR ───────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-/* ── Layout ── */
-main { max-width:1200px; margin:0 auto; padding:24px 20px 80px; }
+  /* ── LOGIN SCREEN ────────────────────────────────────────── */
+  #login-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, #0d2518 0%, var(--bg) 70%);
+  }
+  .login-box {
+    width: 380px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: var(--shadow), 0 0 80px rgba(74,222,128,.05);
+  }
+  .login-logo {
+    font-family: var(--display);
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 6px;
+    letter-spacing: -.5px;
+  }
+  .login-sub {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-bottom: 32px;
+    font-family: var(--mono);
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: .78rem;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .field input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: .9rem;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .field input:focus { border-color: var(--accent); }
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #0a0c0f;
+    border: none;
+    border-radius: var(--radius);
+    padding: 12px;
+    font-family: var(--display);
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity .15s, transform .1s;
+  }
+  .btn-primary:hover { opacity: .9; }
+  .btn-primary:active { transform: scale(.98); }
+  .login-error {
+    color: var(--danger);
+    font-size: .82rem;
+    font-family: var(--mono);
+    margin-top: 12px;
+    display: none;
+  }
+  .login-hint {
+    color: var(--muted);
+    font-size: .75rem;
+    font-family: var(--mono);
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    line-height: 1.6;
+  }
 
-/* ── MRR Hero ── */
-.mrr-hero {
-  background:linear-gradient(135deg,var(--primary),var(--purple));
-  border-radius:var(--radius); padding:28px 28px; margin-bottom:24px;
-  display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
-}
-.mrr-hero h2 { font-family:'Fredoka One',cursive; font-size:2.8rem; line-height:1; }
-.mrr-hero p  { opacity:.85; font-size:.95rem; margin-top:4px; }
-.mrr-meta    { display:flex; gap:20px; flex-wrap:wrap; margin-top:16px; }
-.mrr-chip    { background:rgba(255,255,255,.15); border-radius:10px; padding:8px 14px;
-               font-weight:800; font-size:.85rem; }
-.progress-outer { background:rgba(255,255,255,.2); border-radius:999px; height:10px; margin-top:10px; }
-.progress-inner { background:white; border-radius:999px; height:100%; transition:width .6s ease; }
+  /* ── APP SHELL ───────────────────────────────────────────── */
+  #app { display: none; min-height: 100vh; }
 
-/* ── KPI grid ── */
-.kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; margin-bottom:24px; }
-.kpi { background:var(--card); border-radius:var(--radius); padding:20px 16px; text-align:center;
-       border:1px solid var(--border); transition:transform .2s; }
-.kpi:hover { transform:translateY(-2px); }
-.kpi-num { font-family:'Fredoka One',cursive; font-size:2.2rem; line-height:1; }
-.kpi-lbl { font-size:.75rem; font-weight:800; color:var(--muted); margin-top:4px; }
-.kpi-sub { font-size:.7rem; color:var(--muted); margin-top:2px; }
+  /* ── TOPBAR ──────────────────────────────────────────────── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 56px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .topbar-logo {
+    font-family: var(--display);
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -.3px;
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-tab {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .85rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .nav-tab:hover { color: var(--text); background: var(--border); }
+  .nav-tab.active { color: var(--accent); background: rgba(74,222,128,.1); }
 
-/* ── Section card ── */
-.card { background:var(--card); border-radius:var(--radius); padding:22px 20px;
-        margin-bottom:20px; border:1px solid var(--border); }
-.card-title { font-family:'Fredoka One',cursive; font-size:1.1rem; margin-bottom:16px;
-              color:var(--text); display:flex; align-items:center; gap:8px; }
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-@media(max-width:700px){ .two-col { grid-template-columns:1fr; } }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .live-dot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: .75rem;
+    color: var(--accent);
+  }
+  .live-dot::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .4; }
+  }
+  .btn-sm {
+    background: var(--border);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: .78rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-sm:hover { background: var(--border2); }
 
-/* ── Funnel ── */
-.funnel-row  { display:flex; align-items:center; gap:12px; margin-bottom:10px; }
-.funnel-lbl  { width:150px; font-size:.82rem; font-weight:800; color:var(--muted); flex-shrink:0; }
-.funnel-track{ flex:1; height:26px; background:var(--bg); border-radius:8px; overflow:hidden; }
-.funnel-fill { height:100%; border-radius:8px; display:flex; align-items:center;
-               padding-left:10px; font-weight:800; font-size:.78rem; color:white;
-               transition:width .7s ease; min-width:3px; }
-.funnel-val  { width:44px; text-align:right; font-weight:800; font-size:.85rem; }
-.funnel-conv { width:44px; text-align:right; font-size:.75rem; color:var(--muted); }
+  /* ── MAIN CONTENT ────────────────────────────────────────── */
+  .main { padding: 28px; max-width: 1400px; margin: 0 auto; }
 
-/* ── Timeseries chart ── */
-#chart-area { height:200px; display:flex; align-items:flex-end; gap:3px; overflow:hidden; }
-.chart-bar  { flex:1; border-radius:4px 4px 0 0; cursor:pointer; transition:opacity .2s; min-width:3px; }
-.chart-bar:hover { opacity:.75; }
+  /* ── TABS ────────────────────────────────────────────────── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
 
-/* ── Users table ── */
-.table-wrap { overflow-x:auto; }
-table { width:100%; border-collapse:collapse; font-size:.82rem; }
-th { text-align:left; padding:8px 12px; font-weight:800; color:var(--muted);
-     border-bottom:1.5px solid var(--border); font-size:.73rem; text-transform:uppercase; letter-spacing:.04em; }
-td { padding:10px 12px; border-bottom:1px solid var(--border); font-weight:600; color:var(--text); }
-tr:last-child td { border-bottom:none; }
-tr:hover td { background:rgba(255,255,255,.03); }
-.badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:.7rem; font-weight:800; }
-.badge-green  { background:#22c55e22; color:#22c55e; border:1px solid #22c55e44; }
-.badge-yellow { background:#f59e0b22; color:#f59e0b; border:1px solid #f59e0b44; }
-.badge-red    { background:#ef444422; color:#ef4444; border:1px solid #ef444444; }
-.badge-blue   { background:#6366f122; color:#818cf8; border:1px solid #6366f144; }
+  /* ── OVERVIEW ────────────────────────────────────────────── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .kpi-card:hover { border-color: var(--border2); }
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--kpi-color, var(--border2));
+  }
+  .kpi-label {
+    font-family: var(--mono);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .kpi-value {
+    font-family: var(--display);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text);
+  }
+  .kpi-sub {
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: var(--muted);
+    margin-top: 6px;
+  }
 
-/* ── Event log ── */
-.event-log { max-height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:5px; }
-.event-row { display:flex; align-items:center; gap:8px; padding:7px 10px;
-             background:var(--bg); border-radius:8px; font-size:.78rem; }
-.event-ts  { color:var(--muted); margin-left:auto; white-space:nowrap; font-size:.72rem; }
+  /* ── SECTION ─────────────────────────────────────────────── */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: var(--mono);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--muted);
+  }
 
-/* ── Activity leaderboard ── */
-.act-row { display:flex; align-items:center; gap:10px; padding:10px 0;
-           border-bottom:1px solid var(--border); }
-.act-row:last-child { border-bottom:none; }
-.act-name  { flex:1; font-weight:700; font-size:.85rem; }
-.act-bar   { width:80px; height:8px; background:var(--bg); border-radius:4px; overflow:hidden; }
-.act-fill  { height:100%; border-radius:4px; background:var(--primary); }
-.act-count { width:40px; text-align:right; font-weight:800; font-size:.85rem; color:var(--primary); }
+  /* ── TABLE ───────────────────────────────────────────────── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+  }
+  .data-table th {
+    font-family: var(--mono);
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    padding: 10px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.02);
+  }
+  .data-table td {
+    padding: 11px 20px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(255,255,255,.02); }
+  .data-table .empty-row td {
+    text-align: center;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: .8rem;
+    padding: 32px;
+  }
 
-/* ── Tabs ── */
-.tabs { display:flex; gap:4px; margin-bottom:16px; }
-.tab  { padding:8px 14px; border-radius:10px; border:none; background:transparent;
-        color:var(--muted); font-family:'Nunito',sans-serif; font-weight:800; font-size:.82rem;
-        cursor:pointer; transition:all .2s; }
-.tab.active { background:var(--primary); color:white; }
+  /* ── BADGES ──────────────────────────────────────────────── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: .72rem;
+    font-weight: 500;
+  }
+  .badge-green  { background: rgba(74,222,128,.12);  color: var(--accent); }
+  .badge-blue   { background: rgba(34,211,238,.12);  color: var(--accent2); }
+  .badge-yellow { background: rgba(250,204,21,.12);  color: var(--yellow); }
+  .badge-red    { background: rgba(248,113,113,.12); color: var(--danger); }
+  .badge-gray   { background: rgba(255,255,255,.06); color: var(--muted); }
 
-/* ── Empty state ── */
-.empty { text-align:center; padding:32px; color:var(--muted); }
-.empty div { font-size:2.5rem; margin-bottom:8px; }
+  /* ── EVENT FEED ──────────────────────────────────────────── */
+  .event-list {
+    padding: 0 20px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .event-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: .83rem;
+  }
+  .event-item:last-child { border-bottom: none; }
+  .event-time {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--muted);
+    white-space: nowrap;
+    min-width: 80px;
+  }
+  .event-type {
+    font-family: var(--mono);
+    font-size: .75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(34,211,238,.1);
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+  .event-url { color: var(--muted); font-size: .8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* ── Refresh spinner ── */
-.spin { animation:spin 1s linear infinite; display:inline-block; }
-@keyframes spin { to{ transform:rotate(360deg); } }
+  /* ── STORIES TAB ─────────────────────────────────────────── */
+  .stories-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .btn-accent {
+    background: var(--accent);
+    color: #0a0c0f;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-family: var(--display);
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .btn-accent:hover { opacity: .88; }
+
+  /* ── MODAL ───────────────────────────────────────────────── */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    width: 520px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+    animation: slideUp .2s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title {
+    font-family: var(--display);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.3rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 24px; }
+  .form-field { margin-bottom: 18px; }
+  .form-field label {
+    display: block;
+    font-family: var(--mono);
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .form-field input,
+  .form-field textarea,
+  .form-field select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: .88rem;
+    outline: none;
+    transition: border-color .15s;
+    resize: vertical;
+  }
+  .form-field input:focus,
+  .form-field textarea:focus,
+  .form-field select:focus { border-color: var(--accent); }
+  .form-field select option { background: var(--surface); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .btn-ghost {
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: var(--sans);
+    font-size: .85rem;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+  .btn-danger {
+    background: rgba(248,113,113,.15);
+    border: 1px solid rgba(248,113,113,.3);
+    color: var(--danger);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: var(--sans);
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-danger:hover { background: rgba(248,113,113,.25); }
+
+  /* ── ACTION BTNS IN TABLE ────────────────────────────────── */
+  .action-btn {
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: .75rem;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: var(--mono);
+    margin-right: 4px;
+  }
+  .action-btn:hover { border-color: var(--text); color: var(--text); }
+  .action-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* ── TOAST ───────────────────────────────────────────────── */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-family: var(--mono);
+    font-size: .82rem;
+    box-shadow: var(--shadow);
+    z-index: 999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all .25s cubic-bezier(.34,1.56,.64,1);
+    pointer-events: none;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.success { border-color: var(--accent); color: var(--accent); }
+  #toast.error   { border-color: var(--danger); color: var(--danger); }
+
+  /* ── LOADING ─────────────────────────────────────────────── */
+  .loading-row td {
+    text-align: center;
+    padding: 32px !important;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: .8rem;
+  }
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── STORY PREVIEW ───────────────────────────────────────── */
+  .story-emoji-cell { font-size: 1.4rem; }
+  .story-title-cell { font-weight: 600; max-width: 220px; }
+  .story-content-preview {
+    color: var(--muted);
+    font-size: .78rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+  }
+  .words-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+  .word-chip {
+    background: rgba(34,211,238,.1);
+    color: var(--accent2);
+    font-family: var(--mono);
+    font-size: .68rem;
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  /* ── EMPTY STATE ─────────────────────────────────────────── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 32px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .empty-text { font-family: var(--mono); font-size: .85rem; }
+
+  /* ── API STATUS BAR ──────────────────────────────────────── */
+  #api-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: var(--muted);
+  }
+  #api-status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  #api-status-dot.ok  { background: var(--accent); }
+  #api-status-dot.err { background: var(--danger); }
 </style>
 </head>
 <body>
 
-<!-- ── Login Screen ─────────────────────────────────────────── -->
+<!-- ═══════════════════════════════════════════════════════════ LOGIN -->
 <div id="login-screen">
   <div class="login-box">
-    <div style="font-size:3rem;margin-bottom:12px">📊</div>
-    <h1>Phonics Hub</h1>
-    <p>Admin Dashboard — sign in to continue</p>
-    <div class="form-group">
+    <div class="login-logo">📊 Phonics Hub</div>
+    <div class="login-sub">admin dashboard</div>
+    <div class="field">
       <label>Email</label>
-      <input type="email" id="login-email" placeholder="admin@email.com" />
+      <input type="email" id="login-email" placeholder="admin@example.com" autocomplete="username">
     </div>
-    <div class="form-group">
+    <div class="field">
       <label>Password</label>
-      <input type="password" id="login-password" placeholder="••••••••"
-             onkeydown="if(event.key==='Enter')doLogin()" />
+      <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
     </div>
-    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <button class="btn-primary" id="login-btn">Sign In →</button>
     <div class="login-error" id="login-error">Invalid credentials</div>
-    <div style="margin-top:16px;font-size:.75rem;color:var(--muted)">
-      Set credentials in your API <code>.env</code> file
+    <div class="login-hint">
+      Credentials are set in your API environment variables:<br>
+      <code>ADMIN_EMAIL</code> and <code>ADMIN_PASSWORD</code>
     </div>
   </div>
 </div>
 
-<!-- ── Main App (hidden until logged in) ────────────────────── -->
-<div id="app" style="display:none">
+<!-- ═══════════════════════════════════════════════════════════ APP -->
+<div id="app">
 
-  <div class="topbar">
+  <!-- TOPBAR -->
+  <header class="topbar">
     <div class="topbar-left">
-      <h1>📊 Phonics Hub Admin</h1>
-      <div class="live-badge"><span class="live-dot"></span> Live</div>
+      <div class="topbar-logo">📊 Phonics Hub</div>
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="overview">Overview</button>
+        <button class="nav-tab" data-tab="stories">Stories</button>
+        <button class="nav-tab" data-tab="events">Events</button>
+        <button class="nav-tab" data-tab="emails">Leads</button>
+        <button class="nav-tab" data-tab="users">Users</button>
+      </nav>
     </div>
     <div class="topbar-right">
-      <span id="last-refresh" style="font-size:.75rem;color:var(--muted)"></span>
-      <button class="btn-sm btn-primary" id="refresh-btn" onclick="loadAll()">🔄 Refresh</button>
-      <button class="btn-sm btn-ghost" onclick="doLogout()">Sign Out</button>
+      <div id="api-status">
+        <div id="api-status-dot"></div>
+        <span id="api-status-text">checking…</span>
+      </div>
+      <button class="btn-sm" id="refresh-btn">↻ Refresh</button>
+      <button class="btn-sm" id="signout-btn">Sign out</button>
     </div>
-  </div>
+  </header>
 
-  <main>
+  <!-- MAIN -->
+  <main class="main">
 
-    <!-- MRR Goal -->
-    <div class="mrr-hero" id="mrr-hero">
-      <div>
-        <h2 id="mrr-value">$0 MRR</h2>
-        <p>Goal: $50–$200 MRR</p>
-        <div class="mrr-meta">
-          <div class="mrr-chip" id="chip-subs">0 active subscribers</div>
-          <div class="mrr-chip" id="chip-trial">0 trialing</div>
-          <div class="mrr-chip" id="chip-conv">0% conversion</div>
+    <!-- ── OVERVIEW TAB ── -->
+    <div class="tab-panel active" id="tab-overview">
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi-card" style="--kpi-color:var(--accent)">
+          <div class="kpi-label">MRR</div>
+          <div class="kpi-value" id="kpi-mrr">—</div>
+          <div class="kpi-sub">Goal: $50–$200</div>
         </div>
-        <div class="progress-outer" style="max-width:300px">
-          <div class="progress-inner" id="mrr-bar" style="width:0%"></div>
+        <div class="kpi-card" style="--kpi-color:var(--accent2)">
+          <div class="kpi-label">Active Subs</div>
+          <div class="kpi-value" id="kpi-subs">—</div>
+          <div class="kpi-sub" id="kpi-trial">0 trialing</div>
         </div>
-      </div>
-      <div style="text-align:center">
-        <div id="mrr-today-users" style="font-family:'Fredoka One',cursive;font-size:2.4rem">0</div>
-        <div style="opacity:.8;font-size:.85rem">new users today</div>
-      </div>
-    </div>
-
-    <!-- KPIs -->
-    <div class="kpi-grid" id="kpi-grid"></div>
-
-    <!-- Charts + Funnel row -->
-    <div class="two-col">
-      <div class="card">
-        <div class="card-title">📈 Activity (30 days)</div>
-        <div class="tabs">
-          <button class="tab active" onclick="switchChart('views',this)">Views</button>
-          <button class="tab" onclick="switchChart('starts',this)">Starts</button>
-          <button class="tab" onclick="switchChart('upgrades',this)">Upgrades</button>
+        <div class="kpi-card" style="--kpi-color:var(--yellow)">
+          <div class="kpi-label">New Users Today</div>
+          <div class="kpi-value" id="kpi-users">—</div>
+          <div class="kpi-sub">registrations</div>
         </div>
-        <div id="chart-area"></div>
-        <div id="chart-labels" style="display:flex;justify-content:space-between;margin-top:6px;font-size:.68rem;color:var(--muted)"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">🔻 Conversion Funnel</div>
-        <div id="funnel"></div>
-      </div>
-    </div>
-
-    <!-- Users + Top Activities -->
-    <div class="two-col">
-      <div class="card">
-        <div class="card-title">👤 Recent Users</div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Child</th><th>Age</th><th>Email</th><th>Activities</th><th>Status</th><th>Last seen</th></tr></thead>
-            <tbody id="users-body"></tbody>
-          </table>
+        <div class="kpi-card" style="--kpi-color:var(--warn)">
+          <div class="kpi-label">Total Events</div>
+          <div class="kpi-value" id="kpi-events">—</div>
+          <div class="kpi-sub">all time</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--accent)">
+          <div class="kpi-label">Email Leads</div>
+          <div class="kpi-value" id="kpi-emails">—</div>
+          <div class="kpi-sub">captured</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--accent2)">
+          <div class="kpi-label">Stories</div>
+          <div class="kpi-value" id="kpi-stories">—</div>
+          <div class="kpi-sub">active in library</div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title">🎯 Top Activities by Plays</div>
-        <div id="activities-list"></div>
+      <!-- Recent events feed on overview -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">📋 Live Event Feed</span>
+          <span class="live-dot">live</span>
+        </div>
+        <div class="event-list" id="overview-event-list">
+          <div style="padding:24px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.8rem">Loading…</div>
+        </div>
       </div>
     </div>
 
-    <!-- Event log + Email leads -->
-    <div class="two-col">
-      <div class="card">
-        <div class="card-title">📋 Live Event Feed</div>
-        <div class="event-log" id="event-log"></div>
+    <!-- ── STORIES TAB ── -->
+    <div class="tab-panel" id="tab-stories">
+      <div class="stories-toolbar">
+        <div style="font-family:var(--mono);font-size:.78rem;color:var(--muted)" id="stories-count">Loading stories…</div>
+        <button class="btn-accent" id="new-story-btn">+ New Story</button>
       </div>
+      <div class="section">
+        <table class="data-table" id="stories-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Title</th>
+              <th>Level</th>
+              <th>Content preview</th>
+              <th>Words</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="stories-tbody">
+            <tr class="loading-row"><td colspan="7"><span class="spinner"></span>Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-      <div class="card">
-        <div class="card-title">📧 Email Leads (<span id="leads-count">0</span>)</div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Email</th><th>Name</th><th>Source</th><th>Date</th></tr></thead>
-            <tbody id="leads-body"></tbody>
-          </table>
+    <!-- ── EVENTS TAB ── -->
+    <div class="tab-panel" id="tab-events">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">📋 Event Log</span>
         </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Time</th><th>Type</th><th>Session</th><th>URL</th><th>Premium</th></tr>
+          </thead>
+          <tbody id="events-tbody">
+            <tr class="loading-row"><td colspan="5"><span class="spinner"></span>Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── EMAILS TAB ── -->
+    <div class="tab-panel" id="tab-emails">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">📧 Email Leads</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Email</th><th>Name</th><th>Source</th><th>Date</th></tr>
+          </thead>
+          <tbody id="emails-tbody">
+            <tr class="loading-row"><td colspan="4"><span class="spinner"></span>Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── USERS TAB ── -->
+    <div class="tab-panel" id="tab-users">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">👤 Users</span>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Email</th><th>Child</th><th>Age</th><th>Status</th><th>Joined</th><th>Last seen</th></tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr class="loading-row"><td colspan="6"><span class="spinner"></span>Loading…</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
   </main>
 </div>
 
-<script src="js/config.js"></script>
-<script>
-// ── Config ────────────────────────────────────────────────────────────────
-const API = window.PHONICS_API_BASE || 'https://phonics-api.onrender.com';
-let TOKEN = localStorage.getItem('admin_token') || '';
-let chartData = [], chartMetric = 'views';
+<!-- ═══════════════════════════════════════════════════════════ STORY MODAL -->
+<div class="modal-backdrop" id="story-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">New Story</div>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="story-id">
+      <div class="form-row">
+        <div class="form-field">
+          <label>Title *</label>
+          <input type="text" id="story-title" placeholder="The Cat and the Hat">
+        </div>
+        <div class="form-field">
+          <label>Emoji</label>
+          <input type="text" id="story-emoji" placeholder="📖" maxlength="4">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Level</label>
+          <select id="story-level">
+            <option value="1">Level 1 — Beginner</option>
+            <option value="2">Level 2 — Early</option>
+            <option value="3">Level 3 — Developing</option>
+            <option value="4">Level 4 — Fluent</option>
+            <option value="5">Level 5 — Advanced</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Status</label>
+          <select id="story-active">
+            <option value="true">Active</option>
+            <option value="false">Hidden</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Story Content *</label>
+        <textarea id="story-content" rows="5" placeholder="Write the full story text here…"></textarea>
+      </div>
+      <div class="form-field">
+        <label>Phonics words (comma-separated)</label>
+        <input type="text" id="story-words" placeholder="cat, sat, mat, hat, flat">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-danger" id="modal-delete" style="margin-right:auto;display:none">Delete</button>
+      <button class="btn-ghost" id="modal-cancel">Cancel</button>
+      <button class="btn-accent" id="modal-save">Save Story</button>
+    </div>
+  </div>
+</div>
 
-// ── Auth ──────────────────────────────────────────────────────────────────
-async function doLogin() {
+<!-- ═══════════════════════════════════════════════════════════ TOAST -->
+<div id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   CONFIG — change API base URL here if needed
+══════════════════════════════════════════════════════════════ */
+const API = 'https://phonics-api-k43i.onrender.com';
+
+/* ══════════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════════ */
+let TOKEN = localStorage.getItem('phonics_admin_token') || '';
+let currentTab = 'overview';
+
+/* ══════════════════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════════════════ */
+function fmtTime(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-CA');
+}
+function fmtDateTime(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('en-CA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function toast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+async function apiFetch(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (TOKEN) headers['Authorization'] = `Bearer ${TOKEN}`;
+  const res = await fetch(`${API}${path}`, { ...opts, headers });
+  if (res.status === 401) { signOut(); throw new Error('Unauthorized'); }
+  return res.json();
+}
+
+function setApiStatus(ok) {
+  const dot  = document.getElementById('api-status-dot');
+  const text = document.getElementById('api-status-text');
+  dot.className  = ok ? 'ok' : 'err';
+  text.textContent = ok ? 'API online' : 'API offline';
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════════════════════ */
+async function login() {
   const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
+  const btn      = document.getElementById('login-btn');
   const errEl    = document.getElementById('login-error');
+
+  btn.textContent = 'Signing in…';
+  btn.disabled    = true;
   errEl.style.display = 'none';
+
   try {
-    const res  = await fetch(`${API}/api/admin/login`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Login failed');
+    const data = await fetch(`${API}/api/admin/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    }).then(r => r.json());
+
+    if (!data.token) throw new Error(data.error || 'Login failed');
+
     TOKEN = data.token;
-    localStorage.setItem('admin_token', TOKEN);
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    loadAll();
-    setInterval(loadAll, 60000); // auto-refresh every 60s
-  } catch(e) {
-    errEl.textContent = e.message;
+    localStorage.setItem('phonics_admin_token', TOKEN);
+    showApp();
+  } catch (e) {
+    errEl.textContent = e.message === 'Invalid credentials' ? 'Invalid credentials' : `Error: ${e.message}`;
     errEl.style.display = 'block';
+  } finally {
+    btn.textContent = 'Sign In →';
+    btn.disabled    = false;
   }
 }
 
-function doLogout() {
+function signOut() {
   TOKEN = '';
-  localStorage.removeItem('admin_token');
-  location.reload();
+  localStorage.removeItem('phonics_admin_token');
+  document.getElementById('app').style.display          = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
 }
 
-function authHeader() { return { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json' }; }
-
-// Auto-login if token exists
-if (TOKEN) {
+function showApp() {
   document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  loadAll();
-  setInterval(loadAll, 60000);
+  document.getElementById('app').style.display          = 'block';
+  checkHealth();
+  loadTab('overview');
 }
 
-// ── Load all data ─────────────────────────────────────────────────────────
-async function loadAll() {
-  const btn = document.getElementById('refresh-btn');
-  btn.innerHTML = '<span class="spin">⟳</span> Loading';
+/* ══════════════════════════════════════════════════════════════
+   HEALTH
+══════════════════════════════════════════════════════════════ */
+async function checkHealth() {
   try {
-    const [overview, events, leads, series] = await Promise.all([
-      fetch(`${API}/api/admin/overview`,          { headers: authHeader() }).then(r => r.json()),
-      fetch(`${API}/api/admin/events?limit=50`,   { headers: authHeader() }).then(r => r.json()),
-      fetch(`${API}/api/admin/emails`,            { headers: authHeader() }).then(r => r.json()),
-      fetch(`${API}/api/admin/timeseries?days=30`,{ headers: authHeader() }).then(r => r.json()),
+    const d = await fetch(`${API}/health`).then(r => r.json());
+    setApiStatus(d.ok === true);
+  } catch {
+    setApiStatus(false);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TABS
+══════════════════════════════════════════════════════════════ */
+function loadTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `tab-${tab}`));
+  if (tab === 'overview') loadOverview();
+  if (tab === 'stories')  loadStories();
+  if (tab === 'events')   loadEvents();
+  if (tab === 'emails')   loadEmails();
+  if (tab === 'users')    loadUsers();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   OVERVIEW
+══════════════════════════════════════════════════════════════ */
+async function loadOverview() {
+  try {
+    const [ovRes, evRes] = await Promise.all([
+      apiFetch('/api/admin/overview'),
+      apiFetch('/api/admin/events'),
     ]);
-    if (overview.error) { if (overview.error.includes('token')) { doLogout(); return; } }
-    renderOverview(overview);
-    renderEvents(events.events || []);
-    renderLeads(leads.leads || []);
-    chartData = series.series || [];
-    renderChart();
-    document.getElementById('last-refresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
-  } catch(e) {
-    console.error('Load error:', e.message);
+
+    if (ovRes.ok) {
+      const d = ovRes.data;
+      document.getElementById('kpi-mrr').textContent    = `$${(d.mrr || 0).toFixed(0)}`;
+      document.getElementById('kpi-subs').textContent   = d.active_subs ?? 0;
+      document.getElementById('kpi-trial').textContent  = `${d.trialing ?? 0} trialing`;
+      document.getElementById('kpi-users').textContent  = d.new_users_today ?? 0;
+      document.getElementById('kpi-events').textContent = (d.total_events ?? 0).toLocaleString();
+      document.getElementById('kpi-emails').textContent = d.total_emails ?? 0;
+      document.getElementById('kpi-stories').textContent = d.total_stories ?? 0;
+    }
+
+    if (evRes.ok) renderEventFeed(evRes.data.slice(0, 20), 'overview-event-list');
+  } catch (e) {
+    console.error('overview load failed', e);
   }
-  btn.innerHTML = '🔄 Refresh';
 }
 
-// ── Render overview ───────────────────────────────────────────────────────
-function renderOverview(d) {
-  if (!d.subscriptions) return;
-  const s = d.subscriptions, u = d.users, ev = d.events, f = d.funnel;
-
-  // MRR hero
-  const mrr = parseFloat(s.mrr) || 0;
-  document.getElementById('mrr-value').textContent   = `$${mrr.toFixed(0)} MRR`;
-  document.getElementById('chip-subs').textContent   = `${s.active} active subscribers`;
-  document.getElementById('chip-trial').textContent  = `${s.trialing} trialing`;
-  document.getElementById('chip-conv').textContent   = `${f.conversionPct}% conversion`;
-  document.getElementById('mrr-bar').style.width     = `${Math.min(100,(mrr/200)*100)}%`;
-  document.getElementById('mrr-today-users').textContent = u.newToday;
-
-  // KPIs
-  const kpis = [
-    { num: u.total,       lbl:'Total Users',       sub:'all time',         color:'#6366f1' },
-    { num: u.newThisWeek, lbl:'New This Week',      sub:'signups 7d',       color:'#06b6d4' },
-    { num: u.onboarded,   lbl:'Onboarded',          sub:'completed setup',  color:'#a855f7' },
-    { num: u.hasEmail,    lbl:'Emails Captured',    sub:'leads',            color:'#f59e0b' },
-    { num: ev.activeToday,lbl:'Active Today',       sub:'unique sessions',  color:'#22c55e' },
-    { num: ev.pageViews,  lbl:'Page Views',         sub:'total',            color:'#94a3b8' },
-    { num: ev.paywallHits,lbl:'Paywall Hits',       sub:'saw lock screen',  color:'#f97316' },
-    { num: ev.upgradeClicks,lbl:'Upgrade Clicks',   sub:'intent to buy',    color:'#ec4899' },
-    { num: s.active,      lbl:'Paid Subscribers',   sub:'$9.99/mo',         color:'#22c55e' },
-    { num: d.emailLeads,  lbl:'Email Leads',        sub:'total captured',   color:'#06b6d4' },
-  ];
-  document.getElementById('kpi-grid').innerHTML = kpis.map(k => `
-    <div class="kpi">
-      <div class="kpi-num" style="color:${k.color}">${k.num ?? 0}</div>
-      <div class="kpi-lbl">${k.lbl}</div>
-      <div class="kpi-sub">${k.sub}</div>
-    </div>`).join('');
-
-  // Funnel
-  const steps = [
-    { lbl:'Page Views',     val:f.visitors,       color:'#6366f1' },
-    { lbl:'Onboarded',      val:f.onboarded,      color:'#a855f7' },
-    { lbl:'Email Captured', val:f.emailsCaptured, color:'#06b6d4' },
-    { lbl:'Paywall Hit',    val:f.paywallHits,    color:'#f97316' },
-    { lbl:'Upgrade Click',  val:f.upgradeClicks,  color:'#ec4899' },
-    { lbl:'Subscribed',     val:f.subscribers,    color:'#22c55e' },
-  ];
-  const maxV = Math.max(...steps.map(s=>s.val||0), 1);
-  document.getElementById('funnel').innerHTML = steps.map((s,i) => {
-    const pct  = Math.round((s.val/maxV)*100);
-    const conv = i>0 && steps[i-1].val>0 ? Math.round((s.val/steps[i-1].val)*100)+'%' : '';
-    return `<div class="funnel-row">
-      <div class="funnel-lbl">${s.lbl}</div>
-      <div class="funnel-track"><div class="funnel-fill" style="width:${pct}%;background:${s.color}">${s.val>0?s.val:''}</div></div>
-      <div class="funnel-val">${s.val}</div>
-      <div class="funnel-conv">${conv}</div>
-    </div>`;
-  }).join('');
-
-  // Top activities
-  const actList = document.getElementById('activities-list');
-  if (!d.topActivities?.length) {
-    actList.innerHTML = '<div class="empty"><div>🎯</div><p>No activity data yet</p></div>';
-  } else {
-    const maxPlays = Math.max(...d.topActivities.map(a=>parseInt(a.plays)||0), 1);
-    actList.innerHTML = d.topActivities.map(a => `
-      <div class="act-row">
-        <div class="act-name">${a.activity_id}</div>
-        <div class="act-bar"><div class="act-fill" style="width:${Math.round((parseInt(a.plays)/maxPlays)*100)}%"></div></div>
-        <div class="act-count">${a.plays}</div>
-      </div>`).join('');
+function renderEventFeed(events, containerId) {
+  const el = document.getElementById(containerId);
+  if (!events || !events.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:.8rem">No events yet</div>';
+    return;
   }
-
-  // Users table
-  fetchUsers();
+  el.innerHTML = events.map(e => `
+    <div class="event-item">
+      <span class="event-time">${fmtTime(e.created_at)}</span>
+      <span class="event-type">${e.type}</span>
+      <span class="event-url">${e.url || e.session || '—'}</span>
+      ${e.premium ? '<span class="badge badge-yellow">premium</span>' : ''}
+    </div>
+  `).join('');
 }
 
-async function fetchUsers() {
+/* ══════════════════════════════════════════════════════════════
+   STORIES
+══════════════════════════════════════════════════════════════ */
+let storiesCache = [];
+
+async function loadStories() {
+  const tbody = document.getElementById('stories-tbody');
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="7"><span class="spinner"></span>Loading…</td></tr>';
+
   try {
-    const res  = await fetch(`${API}/api/admin/users?limit=20`, { headers: authHeader() });
-    const data = await res.json();
-    const tbody = document.getElementById('users-body');
-    if (!data.users?.length) {
-      tbody.innerHTML = `<tr><td colspan="6"><div class="empty"><div>👤</div><p>No users yet</p></div></td></tr>`;
+    const data = await apiFetch('/api/stories');
+    storiesCache = data.data || [];
+    document.getElementById('stories-count').textContent = `${storiesCache.length} stories in library`;
+    renderStoriesTable(storiesCache);
+  } catch (e) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Failed to load stories: ${e.message}</td></tr>`;
+  }
+}
+
+function renderStoriesTable(stories) {
+  const tbody = document.getElementById('stories-tbody');
+  if (!stories.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No stories yet — create one!</td></tr>';
+    return;
+  }
+  tbody.innerHTML = stories.map(s => `
+    <tr>
+      <td class="story-emoji-cell">${s.emoji || '📖'}</td>
+      <td class="story-title-cell">${s.title}</td>
+      <td><span class="badge badge-blue">L${s.level}</span></td>
+      <td class="story-content-preview">${(s.content || '').slice(0, 60)}…</td>
+      <td>
+        <div class="words-chips">
+          ${(s.words || []).slice(0,4).map(w => `<span class="word-chip">${w}</span>`).join('')}
+          ${(s.words || []).length > 4 ? `<span class="word-chip">+${s.words.length - 4}</span>` : ''}
+        </div>
+      </td>
+      <td>${s.active !== false ? '<span class="badge badge-green">active</span>' : '<span class="badge badge-gray">hidden</span>'}</td>
+      <td>
+        <button class="action-btn" onclick="openEditModal(${s.id})">Edit</button>
+        <button class="action-btn danger" onclick="deleteStory(${s.id}, '${s.title.replace(/'/g, "\\'")}')">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+/* ── Modal ── */
+function openCreateModal() {
+  document.getElementById('modal-title').textContent = 'New Story';
+  document.getElementById('story-id').value = '';
+  document.getElementById('story-title').value   = '';
+  document.getElementById('story-emoji').value   = '📖';
+  document.getElementById('story-level').value   = '1';
+  document.getElementById('story-active').value  = 'true';
+  document.getElementById('story-content').value = '';
+  document.getElementById('story-words').value   = '';
+  document.getElementById('modal-delete').style.display = 'none';
+  document.getElementById('story-modal').classList.add('open');
+}
+
+async function openEditModal(id) {
+  const story = storiesCache.find(s => s.id === id) || await apiFetch(`/api/stories/${id}`).then(d => d.data);
+  document.getElementById('modal-title').textContent   = 'Edit Story';
+  document.getElementById('story-id').value            = story.id;
+  document.getElementById('story-title').value         = story.title || '';
+  document.getElementById('story-emoji').value         = story.emoji || '📖';
+  document.getElementById('story-level').value         = String(story.level || 1);
+  document.getElementById('story-active').value        = String(story.active !== false);
+  document.getElementById('story-content').value       = story.content || '';
+  document.getElementById('story-words').value         = (story.words || []).join(', ');
+  document.getElementById('modal-delete').style.display = 'inline-flex';
+  document.getElementById('story-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('story-modal').classList.remove('open');
+}
+
+async function saveStory() {
+  const id      = document.getElementById('story-id').value;
+  const title   = document.getElementById('story-title').value.trim();
+  const content = document.getElementById('story-content').value.trim();
+  if (!title || !content) { toast('Title and content are required', 'error'); return; }
+
+  const payload = {
+    title,
+    emoji:   document.getElementById('story-emoji').value.trim() || '📖',
+    level:   parseInt(document.getElementById('story-level').value),
+    active:  document.getElementById('story-active').value === 'true',
+    content,
+    words:   document.getElementById('story-words').value
+               .split(',').map(w => w.trim()).filter(Boolean),
+  };
+
+  const btn = document.getElementById('modal-save');
+  btn.textContent = 'Saving…';
+  btn.disabled    = true;
+
+  try {
+    if (id) {
+      await apiFetch(`/api/stories/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+      toast(`Story updated ✓`);
+    } else {
+      await apiFetch('/api/stories', { method: 'POST', body: JSON.stringify(payload) });
+      toast(`Story created ✓`);
+    }
+    closeModal();
+    loadStories();
+  } catch (e) {
+    toast(`Error: ${e.message}`, 'error');
+  } finally {
+    btn.textContent = 'Save Story';
+    btn.disabled    = false;
+  }
+}
+
+async function deleteStory(id, title) {
+  if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+  try {
+    await apiFetch(`/api/stories/${id}`, { method: 'DELETE' });
+    toast('Story deleted');
+    closeModal();
+    loadStories();
+  } catch (e) {
+    toast(`Delete failed: ${e.message}`, 'error');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EVENTS TAB
+══════════════════════════════════════════════════════════════ */
+async function loadEvents() {
+  const tbody = document.getElementById('events-tbody');
+  try {
+    const data = await apiFetch('/api/admin/events');
+    const rows = data.data || [];
+    if (!rows.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No events logged yet</td></tr>';
       return;
     }
-    tbody.innerHTML = data.users.map(u => `
+    tbody.innerHTML = rows.map(e => `
       <tr>
-        <td>${u.child_name || '<span style="color:var(--muted)">—</span>'}</td>
-        <td>${u.child_age  || '—'}</td>
-        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${u.email || '<span style="color:var(--muted)">—</span>'}</td>
-        <td>${u.activities_completed || 0}</td>
-        <td>${u.is_premium
-          ? '<span class="badge badge-green">Premium</span>'
-          : '<span class="badge badge-yellow">Free</span>'}</td>
-        <td style="color:var(--muted)">${timeAgo(u.last_seen_at)}</td>
-      </tr>`).join('');
-  } catch(e) {}
-}
-
-// ── Render events ─────────────────────────────────────────────────────────
-const EVENT_COLORS = {
-  page_view:'badge-blue', activity_start:'badge-yellow', activity_complete:'badge-green',
-  paywall_hit:'badge-red', upgrade_click:'badge-blue', email_captured:'badge-green',
-  signup:'badge-green', onboarding_step:'badge-blue', streak_milestone:'badge-yellow',
-};
-function renderEvents(events) {
-  const log = document.getElementById('event-log');
-  if (!events.length) { log.innerHTML='<div class="empty"><div>📭</div><p>No events yet</p></div>'; return; }
-  log.innerHTML = events.map(e => `
-    <div class="event-row">
-      <span class="badge ${EVENT_COLORS[e.type]||'badge-blue'}">${e.type}</span>
-      <span style="color:var(--muted);font-size:.75rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-        ${e.child_name ? `👶 ${e.child_name} · ` : ''}
-        ${JSON.stringify(e.data||{}).replace(/[{}\"]/g,'').replace(/,/g,' · ').slice(0,60)}
-      </span>
-      <span class="event-ts">${timeAgo(e.ts)}</span>
-    </div>`).join('');
-}
-
-// ── Render leads ──────────────────────────────────────────────────────────
-function renderLeads(leads) {
-  document.getElementById('leads-count').textContent = leads.length;
-  const tbody = document.getElementById('leads-body');
-  if (!leads.length) { tbody.innerHTML = `<tr><td colspan="4"><div class="empty"><div>📭</div><p>No leads yet</p></div></td></tr>`; return; }
-  tbody.innerHTML = leads.map(l => `
-    <tr>
-      <td>${l.email}</td>
-      <td>${l.name || '—'}</td>
-      <td><span class="badge badge-blue">${l.source||'app'}</span></td>
-      <td style="color:var(--muted)">${timeAgo(l.created_at)}</td>
-    </tr>`).join('');
-}
-
-// ── Chart ─────────────────────────────────────────────────────────────────
-function switchChart(metric, btn) {
-  chartMetric = metric;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  renderChart();
-}
-
-function renderChart() {
-  const area   = document.getElementById('chart-area');
-  const labels = document.getElementById('chart-labels');
-  if (!chartData.length) { area.innerHTML = '<div class="empty" style="width:100%"><div>📊</div><p>No data yet</p></div>'; return; }
-
-  const COLORS = { views:'#6366f1', starts:'#f59e0b', upgrades:'#ec4899' };
-  const vals   = chartData.map(d => parseInt(d[chartMetric]) || 0);
-  const maxV   = Math.max(...vals, 1);
-  const color  = COLORS[chartMetric] || '#6366f1';
-
-  area.innerHTML = vals.map((v, i) => {
-    const h   = Math.round((v / maxV) * 190);
-    const day = new Date(chartData[i].date);
-    return `<div class="chart-bar" style="height:${h}px;background:${color}aa;min-height:2px"
-              title="${day.toLocaleDateString()} — ${v} ${chartMetric}"></div>`;
-  }).join('');
-
-  // Show first and last date
-  if (chartData.length > 0) {
-    const first = new Date(chartData[0].date).toLocaleDateString('en',{month:'short',day:'numeric'});
-    const last  = new Date(chartData[chartData.length-1].date).toLocaleDateString('en',{month:'short',day:'numeric'});
-    labels.innerHTML = `<span>${first}</span><span>${last}</span>`;
+        <td style="font-family:var(--mono);font-size:.75rem;color:var(--muted)">${fmtDateTime(e.created_at)}</td>
+        <td><span class="event-type">${e.type}</span></td>
+        <td style="font-family:var(--mono);font-size:.75rem;color:var(--muted)">${e.session || '—'}</td>
+        <td style="color:var(--muted);font-size:.8rem">${e.url || '—'}</td>
+        <td>${e.premium ? '<span class="badge badge-yellow">yes</span>' : '<span class="badge badge-gray">no</span>'}</td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Failed to load: ${e.message}</td></tr>`;
   }
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────
-function timeAgo(ts) {
-  if (!ts) return '—';
-  const s = Math.round((Date.now() - new Date(ts).getTime()) / 1000);
-  if (s < 60)    return `${s}s ago`;
-  if (s < 3600)  return `${Math.round(s/60)}m ago`;
-  if (s < 86400) return `${Math.round(s/3600)}h ago`;
-  return `${Math.round(s/86400)}d ago`;
+/* ══════════════════════════════════════════════════════════════
+   EMAILS TAB
+══════════════════════════════════════════════════════════════ */
+async function loadEmails() {
+  const tbody = document.getElementById('emails-tbody');
+  try {
+    const data = await apiFetch('/api/admin/emails');
+    const rows = data.data || [];
+    if (!rows.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="4">No leads captured yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(e => `
+      <tr>
+        <td style="font-family:var(--mono);font-size:.82rem">${e.email}</td>
+        <td>${e.name || '—'}</td>
+        <td><span class="badge badge-gray">${e.source || '—'}</span></td>
+        <td style="font-family:var(--mono);font-size:.75rem;color:var(--muted)">${fmtDate(e.created_at)}</td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="4">Failed to load: ${e.message}</td></tr>`;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   USERS TAB
+══════════════════════════════════════════════════════════════ */
+async function loadUsers() {
+  const tbody = document.getElementById('users-tbody');
+  try {
+    const data = await apiFetch('/api/admin/users');
+    const rows = data.data || [];
+    if (!rows.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No users yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(u => `
+      <tr>
+        <td style="font-family:var(--mono);font-size:.8rem">${u.email || '—'}</td>
+        <td>${u.child_name || '—'}</td>
+        <td>${u.child_age ?? '—'}</td>
+        <td><span class="badge ${u.status === 'active' ? 'badge-green' : u.status === 'trialing' ? 'badge-yellow' : 'badge-gray'}">${u.status || 'free'}</span></td>
+        <td style="font-family:var(--mono);font-size:.75rem;color:var(--muted)">${fmtDate(u.created_at)}</td>
+        <td style="font-family:var(--mono);font-size:.75rem;color:var(--muted)">${fmtDateTime(u.last_seen)}</td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Failed to load: ${e.message}</td></tr>`;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EVENT LISTENERS
+══════════════════════════════════════════════════════════════ */
+// Login
+document.getElementById('login-btn').addEventListener('click', login);
+document.getElementById('login-password').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+// Nav
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => loadTab(btn.dataset.tab));
+});
+
+// Topbar actions
+document.getElementById('refresh-btn').addEventListener('click', () => loadTab(currentTab));
+document.getElementById('signout-btn').addEventListener('click', signOut);
+
+// Stories
+document.getElementById('new-story-btn').addEventListener('click', openCreateModal);
+document.getElementById('modal-save').addEventListener('click', saveStory);
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-delete').addEventListener('click', () => {
+  const id    = document.getElementById('story-id').value;
+  const title = document.getElementById('story-title').value;
+  if (id) deleteStory(parseInt(id), title);
+});
+document.getElementById('story-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('story-modal')) closeModal();
+});
+
+// Auto-refresh events every 30s when on overview
+setInterval(() => {
+  if (currentTab === 'overview') loadOverview();
+}, 30000);
+
+/* ══════════════════════════════════════════════════════════════
+   BOOT — auto-login if token in localStorage
+══════════════════════════════════════════════════════════════ */
+if (TOKEN) {
+  showApp();
+} else {
+  // Focus email on load
+  setTimeout(() => document.getElementById('login-email').focus(), 100);
 }
 </script>
 </body>
